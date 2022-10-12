@@ -73,9 +73,7 @@ npm run build
 git add .
 git commit -m "deploy"
 git push origin gh-pages
-
-# Deploy the code with the gh-pages module
-node ./gh-pages.js
+node ./deploy.js
 ```
 
 ## Task List
