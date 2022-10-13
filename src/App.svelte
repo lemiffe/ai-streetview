@@ -198,13 +198,14 @@
                 <div transition:fly={{ y: -100, duration: 1500 }} class="round-summary pt-4 pb-4">
                     {#if gameEnded}
                         <h3>Game Over!</h3>
+                        <p>You were {Math.round(kmDist * 100) / 100}km away ({roundScore} pts) on the last round!</p>
                         <p>You got a total of {score} points!</p>
                     {:else}
                         <h3>You got {roundScore} points!</h3>
-                        <p>You were {kmDist}km away!</p>
+                        <p>You were {Math.round(kmDist * 100) / 100}km away!</p>
                         <p class="mt-1">
-                            <a href={roundUrl} target="_blank">🔗 Click here <sup>[&#129109;]</sup></a> to view the original
-                            street view.
+                            <a href={roundUrl} target="_blank">Click here <sup>[🔗]</sup></a> to view the original street
+                            view.
                         </p>
                     {/if}
                 </div>

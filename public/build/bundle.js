@@ -16079,7 +16079,7 @@ var app = (function () {
     	return block;
     }
 
-    // (202:20) {:else}
+    // (203:20) {:else}
     function create_else_block(ctx) {
     	let h3;
     	let t0;
@@ -16088,6 +16088,7 @@ var app = (function () {
     	let t3;
     	let p0;
     	let t4;
+    	let t5_value = Math.round(/*kmDist*/ ctx[12] * 100) / 100 + "";
     	let t5;
     	let t6;
     	let t7;
@@ -16106,26 +16107,26 @@ var app = (function () {
     			t3 = space();
     			p0 = element("p");
     			t4 = text("You were ");
-    			t5 = text(/*kmDist*/ ctx[12]);
+    			t5 = text(t5_value);
     			t6 = text("km away!");
     			t7 = space();
     			p1 = element("p");
     			a = element("a");
-    			t8 = text("🔗 Click here ");
+    			t8 = text("Click here ");
     			sup = element("sup");
-    			sup.textContent = "[🡕]";
-    			t10 = text(" to view the original\n                            street view.");
+    			sup.textContent = "[🔗]";
+    			t10 = text(" to view the original street\n                            view.");
     			attr_dev(h3, "class", "svelte-vb8m9s");
-    			add_location(h3, file, 202, 24, 6400);
+    			add_location(h3, file, 203, 24, 6518);
     			attr_dev(p0, "class", "svelte-vb8m9s");
-    			add_location(p0, file, 203, 24, 6462);
-    			add_location(sup, file, 205, 77, 6613);
+    			add_location(p0, file, 204, 24, 6580);
+    			add_location(sup, file, 206, 74, 6752);
     			attr_dev(a, "href", /*roundUrl*/ ctx[14]);
     			attr_dev(a, "target", "_blank");
     			attr_dev(a, "class", "svelte-vb8m9s");
-    			add_location(a, file, 205, 28, 6564);
+    			add_location(a, file, 206, 28, 6706);
     			attr_dev(p1, "class", "mt-1 svelte-vb8m9s");
-    			add_location(p1, file, 204, 24, 6519);
+    			add_location(p1, file, 205, 24, 6661);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h3, anchor);
@@ -16146,7 +16147,7 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty[0] & /*roundScore*/ 8192) set_data_dev(t1, /*roundScore*/ ctx[13]);
-    			if (dirty[0] & /*kmDist*/ 4096) set_data_dev(t5, /*kmDist*/ ctx[12]);
+    			if (dirty[0] & /*kmDist*/ 4096 && t5_value !== (t5_value = Math.round(/*kmDist*/ ctx[12] * 100) / 100 + "")) set_data_dev(t5, t5_value);
 
     			if (dirty[0] & /*roundUrl*/ 16384) {
     				attr_dev(a, "href", /*roundUrl*/ ctx[14]);
@@ -16165,7 +16166,7 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(202:20) {:else}",
+    		source: "(203:20) {:else}",
     		ctx
     	});
 
@@ -16176,40 +16177,68 @@ var app = (function () {
     function create_if_block_3(ctx) {
     	let h3;
     	let t1;
-    	let p;
+    	let p0;
     	let t2;
+    	let t3_value = Math.round(/*kmDist*/ ctx[12] * 100) / 100 + "";
     	let t3;
     	let t4;
+    	let t5;
+    	let t6;
+    	let t7;
+    	let p1;
+    	let t8;
+    	let t9;
+    	let t10;
 
     	const block = {
     		c: function create() {
     			h3 = element("h3");
     			h3.textContent = "Game Over!";
     			t1 = space();
-    			p = element("p");
-    			t2 = text("You got a total of ");
-    			t3 = text(/*score*/ ctx[6]);
-    			t4 = text(" points!");
+    			p0 = element("p");
+    			t2 = text("You were ");
+    			t3 = text(t3_value);
+    			t4 = text("km away (");
+    			t5 = text(/*roundScore*/ ctx[13]);
+    			t6 = text(" pts) on the last round!");
+    			t7 = space();
+    			p1 = element("p");
+    			t8 = text("You got a total of ");
+    			t9 = text(/*score*/ ctx[6]);
+    			t10 = text(" points!");
     			attr_dev(h3, "class", "svelte-vb8m9s");
     			add_location(h3, file, 199, 24, 6262);
-    			attr_dev(p, "class", "svelte-vb8m9s");
-    			add_location(p, file, 200, 24, 6306);
+    			attr_dev(p0, "class", "svelte-vb8m9s");
+    			add_location(p0, file, 200, 24, 6306);
+    			attr_dev(p1, "class", "svelte-vb8m9s");
+    			add_location(p1, file, 201, 24, 6424);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, h3, anchor);
     			insert_dev(target, t1, anchor);
-    			insert_dev(target, p, anchor);
-    			append_dev(p, t2);
-    			append_dev(p, t3);
-    			append_dev(p, t4);
+    			insert_dev(target, p0, anchor);
+    			append_dev(p0, t2);
+    			append_dev(p0, t3);
+    			append_dev(p0, t4);
+    			append_dev(p0, t5);
+    			append_dev(p0, t6);
+    			insert_dev(target, t7, anchor);
+    			insert_dev(target, p1, anchor);
+    			append_dev(p1, t8);
+    			append_dev(p1, t9);
+    			append_dev(p1, t10);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*score*/ 64) set_data_dev(t3, /*score*/ ctx[6]);
+    			if (dirty[0] & /*kmDist*/ 4096 && t3_value !== (t3_value = Math.round(/*kmDist*/ ctx[12] * 100) / 100 + "")) set_data_dev(t3, t3_value);
+    			if (dirty[0] & /*roundScore*/ 8192) set_data_dev(t5, /*roundScore*/ ctx[13]);
+    			if (dirty[0] & /*score*/ 64) set_data_dev(t9, /*score*/ ctx[6]);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(h3);
     			if (detaching) detach_dev(t1);
-    			if (detaching) detach_dev(p);
+    			if (detaching) detach_dev(p0);
+    			if (detaching) detach_dev(t7);
+    			if (detaching) detach_dev(p1);
     		}
     	};
 
@@ -16224,7 +16253,7 @@ var app = (function () {
     	return block;
     }
 
-    // (230:58) 
+    // (231:58) 
     function create_if_block_1(ctx) {
     	let button;
     	let mounted;
@@ -16236,7 +16265,7 @@ var app = (function () {
     			button.textContent = "Guess";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-success");
-    			add_location(button, file, 230, 16, 7565);
+    			add_location(button, file, 231, 16, 7697);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -16258,14 +16287,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(230:58) ",
+    		source: "(231:58) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (228:12) {#if !isGuessing && !gameEnded}
+    // (229:12) {#if !isGuessing && !gameEnded}
     function create_if_block(ctx) {
     	let button;
     	let mounted;
@@ -16277,7 +16306,7 @@ var app = (function () {
     			button.textContent = "Next Round";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-info");
-    			add_location(button, file, 228, 16, 7399);
+    			add_location(button, file, 229, 16, 7531);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -16299,7 +16328,7 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(228:12) {#if !isGuessing && !gameEnded}",
+    		source: "(229:12) {#if !isGuessing && !gameEnded}",
     		ctx
     	});
 
@@ -16517,17 +16546,17 @@ var app = (function () {
     			attr_dev(div3, "class", "col-lg-6 svelte-vb8m9s");
     			add_location(div3, file, 195, 8, 6021);
     			attr_dev(div4, "class", "col-lg-6");
-    			add_location(div4, file, 213, 8, 6893);
+    			add_location(div4, file, 214, 8, 7025);
     			attr_dev(div5, "class", "row mb-3 row-map svelte-vb8m9s");
     			add_location(div5, file, 194, 4, 5982);
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-danger ms-2");
-    			add_location(button, file, 232, 12, 7684);
+    			add_location(button, file, 233, 12, 7816);
     			attr_dev(div6, "class", "col");
     			set_style(div6, "text-align", "right");
-    			add_location(div6, file, 226, 8, 7294);
+    			add_location(div6, file, 227, 8, 7426);
     			attr_dev(div7, "class", "row mb-3 align-items-end");
-    			add_location(div7, file, 225, 4, 7247);
+    			add_location(div7, file, 226, 4, 7379);
     			attr_dev(div8, "class", "container");
     			add_location(div8, file, 185, 0, 5587);
     		},
