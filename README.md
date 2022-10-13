@@ -92,11 +92,15 @@ node ./deploy.js
 
 ## Task List
 
-- Bugfix: Map disappears when screen too small (column should collapse / boostrap!)
+- Bugfix: Map disappears when screen too small, on chrome! (column should collapse / boostrap!) <- works on mobile firefox though? (padding!)
 - Bugfix: Try to keep the images in the carousel the same height as the map (when resizing)... min-height?
 - Bugfix: Even though we push last chosen map to the end, sometimes rounds still repeat... how can we avoid this?
 - Bugfix: Cmd+R to refresh not working (something to do with the onKeyDown() function?)
-- Larger max container width (bootstrap override)
+- Bugfix: If you guess out of bounds (lets say, on the left of the map, the line goes through the whole map, but the score is correct)
+- Larger max container width (bootstrap override), hard to see full image + map on large screen
+
+**Next tasks:**
+
 - Splash screen
 - End game screen
 - Timer (per game) + stop at endGame()
