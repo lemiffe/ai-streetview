@@ -28,7 +28,9 @@
     let plonkLatLon = null;
     let guessedLocations = [];
     let showRoundSummary = false;
-    let kmDist = 0; // Last round's distance
+    let kmDist = 0; // Last round's distance in km
+    let roundScore = 0; // Last round's score
+    let roundUrl = "";
 
     function updateMarkerSet(e) {
         plonked = e.detail.plonked;
@@ -93,7 +95,6 @@
     }
 
     function endGame() {
-        // Todo: Show final score overlay, maybe link to the geo map as well?
         gameEnded = true;
         isGuessing = false;
     }
@@ -127,12 +128,10 @@
     function makeGuess() {
         guessedLocations.push(plonkLatLon);
         kmDist = getDistanceFromLatLonInKm(plonkLatLon, currGameMaps[currRound - 1].latlon);
-        const roundScore = calculateRoundScore(kmDist);
+        roundScore = calculateRoundScore(kmDist);
+        roundUrl = currGameMaps[currRound - 1].streetUrl;
         addScore(roundScore);
         console.log("Distance:", kmDist, "Score:", roundScore);
-        // Todo: Show end of round overlay
-        // - Show points for this round (animate?)
-        // - Show link to map (external link)
 
         isGuessing = false;
         if (currRound === 5) {
@@ -196,11 +195,17 @@
     <div class="row mb-3 row-map">
         <div id="carousel-container" class="col-lg-6">
             {#if showRoundSummary}
-                <div transition:fly={{ y: -100, duration: 1500 }} class="round-summary">
-                    {#if !gameEnded}
-                        <p>Game has ended</p>
+                <div transition:fly={{ y: -100, duration: 1500 }} class="round-summary pt-4 pb-4">
+                    {#if gameEnded}
+                        <h3>Game Over!</h3>
+                        <p>You got a total of {score} points!</p>
                     {:else}
+                        <h3>You got {roundScore} points!</h3>
                         <p>You were {kmDist}km away!</p>
+                        <p class="mt-1">
+                            <a href={roundUrl} target="_blank">🔗 Click here <sup>[&#129109;]</sup></a> to view the original
+                            street view.
+                        </p>
                     {/if}
                 </div>
             {/if}
@@ -255,7 +260,14 @@
         margin-right: calc(var(--bs-gutter-x) * 0.5);
     }
 
-    .round-summary p {
+    .round-summary h2,
+    .round-summary h3 {
+        color: #ffffff;
+    }
+    .round-summary p,
+    .round-summary a,
+    .round-summary a:link,
+    .round-summary a:hover {
         margin: 0;
         color: #ffffff;
     }
