@@ -66,6 +66,20 @@ $: if (lineLayers && map) {
 }
 ```
 
+## Adding maps / images
+
+- Grab a screenshot from GeoGuessr (preferrably square, around 1024x1024) containing some meta
+- In Dall-E use Out Painting to paint to the right or left, make sure the generated part is at least 50% of the new image
+- In "My Collection" download the 4 generated images and name then N-a to N-d.jpg and place these in the public/game directory
+- Copy the lat/lon values as well as the street view URLs of each location after finishing the GeoGuessr game (click on the markers)
+- Paste them in the same order as the images in the src/mapset.js file (make sure to use the correct filenames and lat/lons)
+
+## Optimising images
+
+- `cd scripts`
+- `python convert_to_jpgs.py`
+- This will convert all pngs to jpgs (and replace .png for .jpg in mapset.js)
+
 ## Deploying to GH Pages
 
 ```bash
@@ -81,7 +95,6 @@ node ./deploy.js
 - Bugfix: Map disappears when screen too small (column should collapse / boostrap!)
 - Bugfix: Try to keep the images in the carousel the same height as the map (when resizing)... min-height?
 - Larger max container width (bootstrap override)
-- Optimise images (jpg instead of png?)
 - Splash screen
 - End game screen
 - Timer (per game) + stop at endGame()
