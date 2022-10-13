@@ -94,7 +94,8 @@ node ./deploy.js
 
 - Bugfix: Map disappears when screen too small (column should collapse / boostrap!)
 - Bugfix: Try to keep the images in the carousel the same height as the map (when resizing)... min-height?
-- Even though we push last chosen map to the end, sometimes rounds still repeat... how can we avoid this?
+- Bugfix: Even though we push last chosen map to the end, sometimes rounds still repeat... how can we avoid this?
+- Bugfix: Cmd+R to refresh not working (something to do with the onKeyDown() function?)
 - Larger max container width (bootstrap override)
 - Splash screen
 - End game screen
