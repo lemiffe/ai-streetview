@@ -4,6 +4,7 @@
     import Score from "./Score.svelte";
     import mapset from "./mapset.js";
     import * as markerIcons from "./icons.js";
+    import { fly } from "svelte/transition";
 
     // Functions to trigger sub-component events (bound)
 
@@ -26,6 +27,8 @@
     let plonked = false;
     let plonkLatLon = null;
     let guessedLocations = [];
+    let showRoundSummary = false;
+    let kmDist = 0; // Last round's distance
 
     function updateMarkerSet(e) {
         plonked = e.detail.plonked;
@@ -98,6 +101,7 @@
     function nextRound() {
         currRound += 1;
         isGuessing = true;
+        showRoundSummary = false;
         currImages = currGameMaps[currRound - 1].images;
         resetMaplet();
         flyToBounds();
@@ -122,7 +126,7 @@
 
     function makeGuess() {
         guessedLocations.push(plonkLatLon);
-        const kmDist = getDistanceFromLatLonInKm(plonkLatLon, currGameMaps[currRound - 1].latlon);
+        kmDist = getDistanceFromLatLonInKm(plonkLatLon, currGameMaps[currRound - 1].latlon);
         const roundScore = calculateRoundScore(kmDist);
         addScore(roundScore);
         console.log("Distance:", kmDist, "Score:", roundScore);
@@ -146,6 +150,8 @@
             createLine([plonkLatLon, currGameMaps[currRound - 1].latlon]);
             flyToBounds([plonkLatLon, currGameMaps[currRound - 1].latlon]);
         }
+
+        showRoundSummary = true;
     }
 
     function onKeyDown(e) {
@@ -189,6 +195,15 @@
     </div>
     <div class="row mb-3 row-map">
         <div id="carousel-container" class="col-lg-6">
+            {#if showRoundSummary}
+                <div transition:fly={{ y: -100, duration: 1500 }} class="round-summary">
+                    {#if !gameEnded}
+                        <p>Game has ended</p>
+                    {:else}
+                        <p>You were {kmDist}km away!</p>
+                    {/if}
+                </div>
+            {/if}
             <Carousel images={currImages} bind:reset={resetCarousel} />
         </div>
         <div class="col-lg-6">
@@ -222,5 +237,26 @@
 
     .row-map {
         min-height: 600px;
+    }
+
+    #carousel-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .round-summary {
+        top: 0;
+        width: calc(100% - var(--bs-gutter-x));
+        text-align: center;
+        position: absolute;
+        z-index: 1000;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: calc(var(--bs-gutter-x) * 0.5);
+        margin-right: calc(var(--bs-gutter-x) * 0.5);
+    }
+
+    .round-summary p {
+        margin: 0;
+        color: #ffffff;
     }
 </style>

@@ -4,6 +4,7 @@ var app = (function () {
     'use strict';
 
     function noop() { }
+    const identity = x => x;
     function add_location(element, file, line, column, char) {
         element.__svelte_meta = {
             loc: { file, line, column, char }
@@ -38,8 +39,61 @@ var app = (function () {
     function action_destroyer(action_result) {
         return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
     }
+
+    const is_client = typeof window !== 'undefined';
+    let now = is_client
+        ? () => window.performance.now()
+        : () => Date.now();
+    let raf = is_client ? cb => requestAnimationFrame(cb) : noop;
+
+    const tasks = new Set();
+    function run_tasks(now) {
+        tasks.forEach(task => {
+            if (!task.c(now)) {
+                tasks.delete(task);
+                task.f();
+            }
+        });
+        if (tasks.size !== 0)
+            raf(run_tasks);
+    }
+    /**
+     * Creates a new task that runs on each raf frame
+     * until it returns a falsy value or is aborted
+     */
+    function loop(callback) {
+        let task;
+        if (tasks.size === 0)
+            raf(run_tasks);
+        return {
+            promise: new Promise(fulfill => {
+                tasks.add(task = { c: callback, f: fulfill });
+            }),
+            abort() {
+                tasks.delete(task);
+            }
+        };
+    }
     function append(target, node) {
         target.appendChild(node);
+    }
+    function get_root_for_style(node) {
+        if (!node)
+            return document;
+        const root = node.getRootNode ? node.getRootNode() : node.ownerDocument;
+        if (root && root.host) {
+            return root;
+        }
+        return node.ownerDocument;
+    }
+    function append_empty_stylesheet(node) {
+        const style_element = element('style');
+        append_stylesheet(get_root_for_style(node), style_element);
+        return style_element.sheet;
+    }
+    function append_stylesheet(node, style) {
+        append(node.head || node, style);
+        return style.sheet;
     }
     function insert(target, node, anchor) {
         target.insertBefore(node, anchor || null);
@@ -138,6 +192,71 @@ var app = (function () {
         d() {
             this.n.forEach(detach);
         }
+    }
+
+    // we need to store the information for multiple documents because a Svelte application could also contain iframes
+    // https://github.com/sveltejs/svelte/issues/3624
+    const managed_styles = new Map();
+    let active = 0;
+    // https://github.com/darkskyapp/string-hash/blob/master/index.js
+    function hash(str) {
+        let hash = 5381;
+        let i = str.length;
+        while (i--)
+            hash = ((hash << 5) - hash) ^ str.charCodeAt(i);
+        return hash >>> 0;
+    }
+    function create_style_information(doc, node) {
+        const info = { stylesheet: append_empty_stylesheet(node), rules: {} };
+        managed_styles.set(doc, info);
+        return info;
+    }
+    function create_rule(node, a, b, duration, delay, ease, fn, uid = 0) {
+        const step = 16.666 / duration;
+        let keyframes = '{\n';
+        for (let p = 0; p <= 1; p += step) {
+            const t = a + (b - a) * ease(p);
+            keyframes += p * 100 + `%{${fn(t, 1 - t)}}\n`;
+        }
+        const rule = keyframes + `100% {${fn(b, 1 - b)}}\n}`;
+        const name = `__svelte_${hash(rule)}_${uid}`;
+        const doc = get_root_for_style(node);
+        const { stylesheet, rules } = managed_styles.get(doc) || create_style_information(doc, node);
+        if (!rules[name]) {
+            rules[name] = true;
+            stylesheet.insertRule(`@keyframes ${name} ${rule}`, stylesheet.cssRules.length);
+        }
+        const animation = node.style.animation || '';
+        node.style.animation = `${animation ? `${animation}, ` : ''}${name} ${duration}ms linear ${delay}ms 1 both`;
+        active += 1;
+        return name;
+    }
+    function delete_rule(node, name) {
+        const previous = (node.style.animation || '').split(', ');
+        const next = previous.filter(name
+            ? anim => anim.indexOf(name) < 0 // remove specific animation
+            : anim => anim.indexOf('__svelte') === -1 // remove all Svelte animations
+        );
+        const deleted = previous.length - next.length;
+        if (deleted) {
+            node.style.animation = next.join(', ');
+            active -= deleted;
+            if (!active)
+                clear_rules();
+        }
+    }
+    function clear_rules() {
+        raf(() => {
+            if (active)
+                return;
+            managed_styles.forEach(info => {
+                const { ownerNode } = info.stylesheet;
+                // there is no ownerNode if it runs on jsdom.
+                if (ownerNode)
+                    detach(ownerNode);
+            });
+            managed_styles.clear();
+        });
     }
 
     let current_component;
@@ -250,8 +369,35 @@ var app = (function () {
             $$.after_update.forEach(add_render_callback);
         }
     }
+
+    let promise;
+    function wait() {
+        if (!promise) {
+            promise = Promise.resolve();
+            promise.then(() => {
+                promise = null;
+            });
+        }
+        return promise;
+    }
+    function dispatch(node, direction, kind) {
+        node.dispatchEvent(custom_event(`${direction ? 'intro' : 'outro'}${kind}`));
+    }
     const outroing = new Set();
     let outros;
+    function group_outros() {
+        outros = {
+            r: 0,
+            c: [],
+            p: outros // parent group
+        };
+    }
+    function check_outros() {
+        if (!outros.r) {
+            run_all(outros.c);
+        }
+        outros = outros.p;
+    }
     function transition_in(block, local) {
         if (block && block.i) {
             outroing.delete(block);
@@ -276,6 +422,112 @@ var app = (function () {
         else if (callback) {
             callback();
         }
+    }
+    const null_transition = { duration: 0 };
+    function create_bidirectional_transition(node, fn, params, intro) {
+        let config = fn(node, params);
+        let t = intro ? 0 : 1;
+        let running_program = null;
+        let pending_program = null;
+        let animation_name = null;
+        function clear_animation() {
+            if (animation_name)
+                delete_rule(node, animation_name);
+        }
+        function init(program, duration) {
+            const d = (program.b - t);
+            duration *= Math.abs(d);
+            return {
+                a: t,
+                b: program.b,
+                d,
+                duration,
+                start: program.start,
+                end: program.start + duration,
+                group: program.group
+            };
+        }
+        function go(b) {
+            const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+            const program = {
+                start: now() + delay,
+                b
+            };
+            if (!b) {
+                // @ts-ignore todo: improve typings
+                program.group = outros;
+                outros.r += 1;
+            }
+            if (running_program || pending_program) {
+                pending_program = program;
+            }
+            else {
+                // if this is an intro, and there's a delay, we need to do
+                // an initial tick and/or apply CSS animation immediately
+                if (css) {
+                    clear_animation();
+                    animation_name = create_rule(node, t, b, duration, delay, easing, css);
+                }
+                if (b)
+                    tick(0, 1);
+                running_program = init(program, duration);
+                add_render_callback(() => dispatch(node, b, 'start'));
+                loop(now => {
+                    if (pending_program && now > pending_program.start) {
+                        running_program = init(pending_program, duration);
+                        pending_program = null;
+                        dispatch(node, running_program.b, 'start');
+                        if (css) {
+                            clear_animation();
+                            animation_name = create_rule(node, t, running_program.b, running_program.duration, 0, easing, config.css);
+                        }
+                    }
+                    if (running_program) {
+                        if (now >= running_program.end) {
+                            tick(t = running_program.b, 1 - t);
+                            dispatch(node, running_program.b, 'end');
+                            if (!pending_program) {
+                                // we're done
+                                if (running_program.b) {
+                                    // intro — we can tidy up immediately
+                                    clear_animation();
+                                }
+                                else {
+                                    // outro — needs to be coordinated
+                                    if (!--running_program.group.r)
+                                        run_all(running_program.group.c);
+                                }
+                            }
+                            running_program = null;
+                        }
+                        else if (now >= running_program.start) {
+                            const p = now - running_program.start;
+                            t = running_program.a + running_program.d * easing(p / running_program.duration);
+                            tick(t, 1 - t);
+                        }
+                    }
+                    return !!(running_program || pending_program);
+                });
+            }
+        }
+        return {
+            run(b) {
+                if (is_function(config)) {
+                    wait().then(() => {
+                        // @ts-ignore
+                        config = config();
+                        go(b);
+                    });
+                }
+                else {
+                    go(b);
+                }
+            },
+            end() {
+                clear_animation();
+                running_program = pending_program = null;
+            }
+        };
     }
 
     const globals = (typeof window !== 'undefined'
@@ -15693,14 +15945,213 @@ var app = (function () {
             gameUrl: "https://www.geoguessr.com/game/QPT1qg1pjwYo4v9p",
             images: ["5-a.jpg", "5-b.jpg", "5-c.jpg", "5-d.jpg"],
         },
+        {
+            latlon: [24.8580588, 56.0631761],
+            streetUrl:
+                "https://www.google.com/maps/@24.8580588,56.0631761,3a,75y,90t/data=!3m6!1e1!3m4!1sJ9jXu86YbiQc2_FLkozPvA!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
+            images: ["11-a.jpg", "11-b.jpg", "11-c.jpg", "11-d.jpg"],
+        },
+        {
+            latlon: [14.7910964, 100.2821714],
+            streetUrl:
+                "https://www.google.com/maps/@14.7910964,100.2821714,3a,75y,90t/data=!3m6!1e1!3m4!1sdOFqY9RUlzR0Qh9hdmsGNw!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
+            images: ["12-a.jpg", "12-b.jpg", "12-c.jpg", "12-d.jpg"],
+        },
+        {
+            latlon: [24.8948642, 91.8785738],
+            streetUrl:
+                "https://www.google.com/maps/@24.8948642,91.8785738,3a,75y,90t/data=!3m6!1e1!3m4!1sFaEgkoXUGIM-qlEBwGzTSA!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
+            images: ["13-a.jpg", "13-b.jpg", "13-c.jpg", "13-d.jpg"],
+        },
+        {
+            latlon: [51.2619731, -105.9886626],
+            streetUrl:
+                "https://www.google.com/maps/@51.2619731,-105.9886626,3a,75y,90t/data=!3m6!1e1!3m4!1sXsHtv5ZrL_uVEn7pSQi15Q!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
+            images: ["14-a.jpg", "14-b.jpg", "14-c.jpg", "14-d.jpg"],
+        },
+        {
+            latlon: [22.8940319, 121.1631629],
+            streetUrl:
+                "https://www.google.com/maps/@22.8940319,121.1631629,3a,75y,90t/data=!3m6!1e1!3m4!1szelYQn-JzTLFJri17DStzQ!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
+            images: ["15-a.jpg", "15-b.jpg", "15-c.jpg", "15-d.jpg"],
+        },
     ];
+
+    function cubicOut(t) {
+        const f = t - 1.0;
+        return f * f * f + 1.0;
+    }
+
+    function fly(node, { delay = 0, duration = 400, easing = cubicOut, x = 0, y = 0, opacity = 0 } = {}) {
+        const style = getComputedStyle(node);
+        const target_opacity = +style.opacity;
+        const transform = style.transform === 'none' ? '' : style.transform;
+        const od = target_opacity * (1 - opacity);
+        return {
+            delay,
+            duration,
+            easing,
+            css: (t, u) => `
+			transform: ${transform} translate(${(1 - t) * x}px, ${(1 - t) * y}px);
+			opacity: ${target_opacity - (od * u)}`
+        };
+    }
 
     /* src/App.svelte generated by Svelte v3.50.1 */
 
     const { console: console_1 } = globals;
     const file = "src/App.svelte";
 
-    // (210:58) 
+    // (198:12) {#if showRoundSummary}
+    function create_if_block_2(ctx) {
+    	let div;
+    	let div_transition;
+    	let current;
+
+    	function select_block_type(ctx, dirty) {
+    		if (!/*gameEnded*/ ctx[9]) return create_if_block_3;
+    		return create_else_block;
+    	}
+
+    	let current_block_type = select_block_type(ctx);
+    	let if_block = current_block_type(ctx);
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			if_block.c();
+    			attr_dev(div, "class", "round-summary svelte-17uwime");
+    			add_location(div, file, 198, 16, 6210);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			if_block.m(div, null);
+    			current = true;
+    		},
+    		p: function update(ctx, dirty) {
+    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
+    				if_block.p(ctx, dirty);
+    			} else {
+    				if_block.d(1);
+    				if_block = current_block_type(ctx);
+
+    				if (if_block) {
+    					if_block.c();
+    					if_block.m(div, null);
+    				}
+    			}
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+
+    			add_render_callback(() => {
+    				if (!div_transition) div_transition = create_bidirectional_transition(div, fly, { y: -100, duration: 1500 }, true);
+    				div_transition.run(1);
+    			});
+
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			if (!div_transition) div_transition = create_bidirectional_transition(div, fly, { y: -100, duration: 1500 }, false);
+    			div_transition.run(0);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    			if_block.d();
+    			if (detaching && div_transition) div_transition.end();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_2.name,
+    		type: "if",
+    		source: "(198:12) {#if showRoundSummary}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (202:20) {:else}
+    function create_else_block(ctx) {
+    	let p;
+    	let t0;
+    	let t1;
+    	let t2;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			t0 = text("You were ");
+    			t1 = text(/*kmDist*/ ctx[12]);
+    			t2 = text("km away!");
+    			attr_dev(p, "class", "svelte-17uwime");
+    			add_location(p, file, 202, 24, 6418);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    			append_dev(p, t0);
+    			append_dev(p, t1);
+    			append_dev(p, t2);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty[0] & /*kmDist*/ 4096) set_data_dev(t1, /*kmDist*/ ctx[12]);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block.name,
+    		type: "else",
+    		source: "(202:20) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (200:20) {#if !gameEnded}
+    function create_if_block_3(ctx) {
+    	let p;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			p.textContent = "Game has ended";
+    			attr_dev(p, "class", "svelte-17uwime");
+    			add_location(p, file, 200, 24, 6344);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_3.name,
+    		type: "if",
+    		source: "(200:20) {#if !gameEnded}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (225:58) 
     function create_if_block_1(ctx) {
     	let button;
     	let mounted;
@@ -15712,13 +16163,13 @@ var app = (function () {
     			button.textContent = "Guess";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-success");
-    			add_location(button, file, 210, 16, 6740);
+    			add_location(button, file, 225, 16, 7285);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
 
     			if (!mounted) {
-    				dispose = listen_dev(button, "click", /*makeGuess*/ ctx[14], false, false, false);
+    				dispose = listen_dev(button, "click", /*makeGuess*/ ctx[16], false, false, false);
     				mounted = true;
     			}
     		},
@@ -15734,14 +16185,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(210:58) ",
+    		source: "(225:58) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (208:12) {#if !isGuessing && !gameEnded}
+    // (223:12) {#if !isGuessing && !gameEnded}
     function create_if_block(ctx) {
     	let button;
     	let mounted;
@@ -15753,13 +16204,13 @@ var app = (function () {
     			button.textContent = "Next Round";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-info");
-    			add_location(button, file, 208, 16, 6574);
+    			add_location(button, file, 223, 16, 7119);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
 
     			if (!mounted) {
-    				dispose = listen_dev(button, "click", /*nextRound*/ ctx[13], false, false, false);
+    				dispose = listen_dev(button, "click", /*nextRound*/ ctx[15], false, false, false);
     				mounted = true;
     			}
     		},
@@ -15775,7 +16226,7 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(208:12) {#if !isGuessing && !gameEnded}",
+    		source: "(223:12) {#if !isGuessing && !gameEnded}",
     		ctx
     	});
 
@@ -15811,9 +16262,10 @@ var app = (function () {
     	let t12;
     	let div5;
     	let div3;
+    	let t13;
     	let carousel;
     	let updating_reset;
-    	let t13;
+    	let t14;
     	let div4;
     	let maplet;
     	let updating_reset_1;
@@ -15821,10 +16273,10 @@ var app = (function () {
     	let updating_line;
     	let updating_addMarkers;
     	let updating_fly;
-    	let t14;
+    	let t15;
     	let div7;
     	let div6;
-    	let t15;
+    	let t16;
     	let button;
     	let current;
     	let mounted;
@@ -15835,8 +16287,10 @@ var app = (function () {
     			$$inline: true
     		});
 
+    	let if_block0 = /*showRoundSummary*/ ctx[11] && create_if_block_2(ctx);
+
     	function carousel_reset_binding(value) {
-    		/*carousel_reset_binding*/ ctx[16](value);
+    		/*carousel_reset_binding*/ ctx[18](value);
     	}
 
     	let carousel_props = { images: /*currImages*/ ctx[7] };
@@ -15849,23 +16303,23 @@ var app = (function () {
     	binding_callbacks.push(() => bind(carousel, 'reset', carousel_reset_binding));
 
     	function maplet_reset_binding(value) {
-    		/*maplet_reset_binding*/ ctx[17](value);
+    		/*maplet_reset_binding*/ ctx[19](value);
     	}
 
     	function maplet_resize_binding(value) {
-    		/*maplet_resize_binding*/ ctx[18](value);
+    		/*maplet_resize_binding*/ ctx[20](value);
     	}
 
     	function maplet_line_binding(value) {
-    		/*maplet_line_binding*/ ctx[19](value);
+    		/*maplet_line_binding*/ ctx[21](value);
     	}
 
     	function maplet_addMarkers_binding(value) {
-    		/*maplet_addMarkers_binding*/ ctx[20](value);
+    		/*maplet_addMarkers_binding*/ ctx[22](value);
     	}
 
     	function maplet_fly_binding(value) {
-    		/*maplet_fly_binding*/ ctx[21](value);
+    		/*maplet_fly_binding*/ ctx[23](value);
     	}
 
     	let maplet_props = { isGuessing: /*isGuessing*/ ctx[8] };
@@ -15896,15 +16350,15 @@ var app = (function () {
     	binding_callbacks.push(() => bind(maplet, 'line', maplet_line_binding));
     	binding_callbacks.push(() => bind(maplet, 'addMarkers', maplet_addMarkers_binding));
     	binding_callbacks.push(() => bind(maplet, 'fly', maplet_fly_binding));
-    	maplet.$on("plonk", /*updateMarkerSet*/ ctx[11]);
+    	maplet.$on("plonk", /*updateMarkerSet*/ ctx[13]);
 
-    	function select_block_type(ctx, dirty) {
+    	function select_block_type_1(ctx, dirty) {
     		if (!/*isGuessing*/ ctx[8] && !/*gameEnded*/ ctx[9]) return create_if_block;
     		if (/*isGuessing*/ ctx[8] && !/*gameEnded*/ ctx[9] && /*plonked*/ ctx[10]) return create_if_block_1;
     	}
 
-    	let current_block_type = select_block_type(ctx);
-    	let if_block = current_block_type && current_block_type(ctx);
+    	let current_block_type = select_block_type_1(ctx);
+    	let if_block1 = current_block_type && current_block_type(ctx);
 
     	const block = {
     		c: function create() {
@@ -15940,67 +16394,69 @@ var app = (function () {
     			t12 = space();
     			div5 = element("div");
     			div3 = element("div");
-    			create_component(carousel.$$.fragment);
+    			if (if_block0) if_block0.c();
     			t13 = space();
+    			create_component(carousel.$$.fragment);
+    			t14 = space();
     			div4 = element("div");
     			create_component(maplet.$$.fragment);
-    			t14 = space();
+    			t15 = space();
     			div7 = element("div");
     			div6 = element("div");
-    			if (if_block) if_block.c();
-    			t15 = space();
+    			if (if_block1) if_block1.c();
+    			t16 = space();
     			button = element("button");
     			button.textContent = "New Game";
     			html_tag.a = t0;
     			attr_dev(span, "class", "fs-4 ps-1");
-    			add_location(span, file, 165, 12, 5050);
+    			add_location(span, file, 171, 12, 5236);
     			attr_dev(a0, "href", "/");
     			attr_dev(a0, "class", "d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none");
-    			add_location(a0, file, 163, 8, 4898);
+    			add_location(a0, file, 169, 8, 5084);
     			attr_dev(a1, "href", "https://hyperfollow.com/lemiffe");
     			attr_dev(a1, "target", "_blank");
-    			attr_dev(a1, "class", "svelte-10e92ak");
-    			add_location(a1, file, 171, 16, 5236);
+    			attr_dev(a1, "class", "svelte-17uwime");
+    			add_location(a1, file, 177, 16, 5422);
     			attr_dev(a2, "href", "https://twitter.com/pjcr");
     			attr_dev(a2, "target", "_blank");
-    			attr_dev(a2, "class", "svelte-10e92ak");
-    			add_location(a2, file, 173, 16, 5343);
-    			attr_dev(li, "class", "nav-item svelte-10e92ak");
-    			add_location(li, file, 169, 12, 5174);
+    			attr_dev(a2, "class", "svelte-17uwime");
+    			add_location(a2, file, 179, 16, 5529);
+    			attr_dev(li, "class", "nav-item svelte-17uwime");
+    			add_location(li, file, 175, 12, 5360);
     			attr_dev(ul, "class", "nav nav-pills");
-    			add_location(ul, file, 168, 8, 5135);
+    			add_location(ul, file, 174, 8, 5321);
     			attr_dev(header, "class", "d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom");
-    			add_location(header, file, 162, 4, 4809);
+    			add_location(header, file, 168, 4, 4995);
     			attr_dev(div0, "class", "container");
-    			add_location(div0, file, 161, 0, 4781);
+    			add_location(div0, file, 167, 0, 4967);
     			attr_dev(strong, "class", "danger");
-    			add_location(strong, file, 184, 16, 5668);
-    			add_location(br, file, 184, 113, 5765);
-    			add_location(i, file, 185, 16, 5788);
+    			add_location(strong, file, 190, 16, 5854);
+    			add_location(br, file, 190, 113, 5951);
+    			add_location(i, file, 191, 16, 5974);
     			set_style(p, "text-align", "center");
     			set_style(p, "font-size", "1.2em");
-    			add_location(p, file, 183, 12, 5602);
+    			add_location(p, file, 189, 12, 5788);
     			attr_dev(div1, "class", "col");
-    			add_location(div1, file, 182, 8, 5572);
+    			add_location(div1, file, 188, 8, 5758);
     			attr_dev(div2, "class", "row pt-1 mb-3 align-items-end");
-    			add_location(div2, file, 181, 4, 5520);
+    			add_location(div2, file, 187, 4, 5706);
     			attr_dev(div3, "id", "carousel-container");
-    			attr_dev(div3, "class", "col-lg-6");
-    			add_location(div3, file, 190, 8, 5926);
+    			attr_dev(div3, "class", "col-lg-6 svelte-17uwime");
+    			add_location(div3, file, 196, 8, 6112);
     			attr_dev(div4, "class", "col-lg-6");
-    			add_location(div4, file, 193, 8, 6068);
-    			attr_dev(div5, "class", "row mb-3 row-map svelte-10e92ak");
-    			add_location(div5, file, 189, 4, 5887);
+    			add_location(div4, file, 208, 8, 6613);
+    			attr_dev(div5, "class", "row mb-3 row-map svelte-17uwime");
+    			add_location(div5, file, 195, 4, 6073);
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-danger ms-2");
-    			add_location(button, file, 212, 12, 6859);
+    			add_location(button, file, 227, 12, 7404);
     			attr_dev(div6, "class", "col");
     			set_style(div6, "text-align", "right");
-    			add_location(div6, file, 206, 8, 6469);
+    			add_location(div6, file, 221, 8, 7014);
     			attr_dev(div7, "class", "row mb-3 align-items-end");
-    			add_location(div7, file, 205, 4, 6422);
+    			add_location(div7, file, 220, 4, 6967);
     			attr_dev(div8, "class", "container");
-    			add_location(div8, file, 180, 0, 5492);
+    			add_location(div8, file, 186, 0, 5678);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -16033,15 +16489,17 @@ var app = (function () {
     			append_dev(div8, t12);
     			append_dev(div8, div5);
     			append_dev(div5, div3);
+    			if (if_block0) if_block0.m(div3, null);
+    			append_dev(div3, t13);
     			mount_component(carousel, div3, null);
-    			append_dev(div5, t13);
+    			append_dev(div5, t14);
     			append_dev(div5, div4);
     			mount_component(maplet, div4, null);
-    			append_dev(div8, t14);
+    			append_dev(div8, t15);
     			append_dev(div8, div7);
     			append_dev(div7, div6);
-    			if (if_block) if_block.m(div6, null);
-    			append_dev(div6, t15);
+    			if (if_block1) if_block1.m(div6, null);
+    			append_dev(div6, t16);
     			append_dev(div6, button);
     			current = true;
 
@@ -16057,8 +16515,8 @@ var app = (function () {
     						false,
     						false
     					),
-    					listen_dev(window, "keydown", prevent_default(/*onKeyDown*/ ctx[15]), false, true, false),
-    					listen_dev(button, "click", /*newGame*/ ctx[12], false, false, false)
+    					listen_dev(window, "keydown", prevent_default(/*onKeyDown*/ ctx[17]), false, true, false),
+    					listen_dev(button, "click", /*newGame*/ ctx[14], false, false, false)
     				];
 
     				mounted = true;
@@ -16069,6 +16527,30 @@ var app = (function () {
     			const score_1_changes = {};
     			if (dirty[0] & /*score*/ 64) score_1_changes.score = /*score*/ ctx[6];
     			score_1.$set(score_1_changes);
+
+    			if (/*showRoundSummary*/ ctx[11]) {
+    				if (if_block0) {
+    					if_block0.p(ctx, dirty);
+
+    					if (dirty[0] & /*showRoundSummary*/ 2048) {
+    						transition_in(if_block0, 1);
+    					}
+    				} else {
+    					if_block0 = create_if_block_2(ctx);
+    					if_block0.c();
+    					transition_in(if_block0, 1);
+    					if_block0.m(div3, t13);
+    				}
+    			} else if (if_block0) {
+    				group_outros();
+
+    				transition_out(if_block0, 1, 1, () => {
+    					if_block0 = null;
+    				});
+
+    				check_outros();
+    			}
+
     			const carousel_changes = {};
     			if (dirty[0] & /*currImages*/ 128) carousel_changes.images = /*currImages*/ ctx[7];
 
@@ -16114,27 +16596,29 @@ var app = (function () {
 
     			maplet.$set(maplet_changes);
 
-    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
-    				if_block.p(ctx, dirty);
+    			if (current_block_type === (current_block_type = select_block_type_1(ctx)) && if_block1) {
+    				if_block1.p(ctx, dirty);
     			} else {
-    				if (if_block) if_block.d(1);
-    				if_block = current_block_type && current_block_type(ctx);
+    				if (if_block1) if_block1.d(1);
+    				if_block1 = current_block_type && current_block_type(ctx);
 
-    				if (if_block) {
-    					if_block.c();
-    					if_block.m(div6, t15);
+    				if (if_block1) {
+    					if_block1.c();
+    					if_block1.m(div6, t16);
     				}
     			}
     		},
     		i: function intro(local) {
     			if (current) return;
     			transition_in(score_1.$$.fragment, local);
+    			transition_in(if_block0);
     			transition_in(carousel.$$.fragment, local);
     			transition_in(maplet.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(score_1.$$.fragment, local);
+    			transition_out(if_block0);
     			transition_out(carousel.$$.fragment, local);
     			transition_out(maplet.$$.fragment, local);
     			current = false;
@@ -16144,11 +16628,12 @@ var app = (function () {
     			destroy_component(score_1);
     			if (detaching) detach_dev(t8);
     			if (detaching) detach_dev(div8);
+    			if (if_block0) if_block0.d();
     			destroy_component(carousel);
     			destroy_component(maplet);
 
-    			if (if_block) {
-    				if_block.d();
+    			if (if_block1) {
+    				if_block1.d();
     			}
 
     			mounted = false;
@@ -16231,6 +16716,8 @@ var app = (function () {
     	let plonked = false;
     	let plonkLatLon = null;
     	let guessedLocations = [];
+    	let showRoundSummary = false;
+    	let kmDist = 0; // Last round's distance
 
     	function updateMarkerSet(e) {
     		$$invalidate(10, plonked = e.detail.plonked);
@@ -16297,6 +16784,7 @@ var app = (function () {
     	function nextRound() {
     		currRound += 1;
     		$$invalidate(8, isGuessing = true);
+    		$$invalidate(11, showRoundSummary = false);
     		$$invalidate(7, currImages = currGameMaps[currRound - 1].images);
     		resetMaplet();
     		flyToBounds();
@@ -16305,7 +16793,7 @@ var app = (function () {
 
     	function makeGuess() {
     		guessedLocations.push(plonkLatLon);
-    		const kmDist = getDistanceFromLatLonInKm(plonkLatLon, currGameMaps[currRound - 1].latlon);
+    		$$invalidate(12, kmDist = getDistanceFromLatLonInKm(plonkLatLon, currGameMaps[currRound - 1].latlon));
     		const roundScore = calculateRoundScore(kmDist);
     		addScore(roundScore);
     		console.log("Distance:", kmDist, "Score:", roundScore);
@@ -16332,6 +16820,8 @@ var app = (function () {
     			createLine([plonkLatLon, currGameMaps[currRound - 1].latlon]);
     			flyToBounds([plonkLatLon, currGameMaps[currRound - 1].latlon]);
     		}
+
+    		$$invalidate(11, showRoundSummary = true);
     	}
 
     	function onKeyDown(e) {
@@ -16383,6 +16873,7 @@ var app = (function () {
     		Score,
     		mapset,
     		markerIcons,
+    		fly,
     		resetCarousel,
     		resetMaplet,
     		resizeMaplet,
@@ -16399,6 +16890,8 @@ var app = (function () {
     		plonked,
     		plonkLatLon,
     		guessedLocations,
+    		showRoundSummary,
+    		kmDist,
     		updateMarkerSet,
     		addScore,
     		resetScore,
@@ -16432,6 +16925,8 @@ var app = (function () {
     		if ('plonked' in $$props) $$invalidate(10, plonked = $$props.plonked);
     		if ('plonkLatLon' in $$props) plonkLatLon = $$props.plonkLatLon;
     		if ('guessedLocations' in $$props) guessedLocations = $$props.guessedLocations;
+    		if ('showRoundSummary' in $$props) $$invalidate(11, showRoundSummary = $$props.showRoundSummary);
+    		if ('kmDist' in $$props) $$invalidate(12, kmDist = $$props.kmDist);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -16450,6 +16945,8 @@ var app = (function () {
     		isGuessing,
     		gameEnded,
     		plonked,
+    		showRoundSummary,
+    		kmDist,
     		updateMarkerSet,
     		newGame,
     		nextRound,

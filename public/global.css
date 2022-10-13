@@ -103,3 +103,23 @@ button:focus {
 	background-color: #27BD85;
 	border-color: #27BD85;
 }
+
+.info {
+	color: #9315AD !important;
+}
+
+.bg-info {
+	background-color: #9315AD !important;
+}
+
+.btn-info {
+	background-color: #9315AD;
+	border-color: #9315AD;
+	color: #ffffff;
+}
+
+.btn-info:hover, .btn-info:focus, .btn-info:active {
+	background-color: #7b168f;
+	border-color: #7b168f;
+	color: #ffffff;
+}
