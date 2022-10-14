@@ -177,7 +177,7 @@
             {/if}
             <Carousel images={currImages} bind:reset={resetCarousel} />
         </div>
-        <div class="col-lg-6">
+        <div id="map-container" class="col-lg-6">
             <Maplet
                 bind:reset={resetMaplet}
                 bind:resize={resizeMaplet}
@@ -209,6 +209,16 @@
     #carousel-container {
         position: relative;
         overflow: hidden;
+    }
+
+    #carousel-container, #map-container {
+        margin: 0 0 1rem;
+    }
+
+    @media (min-width: 980px) {
+        #carousel-container, #map-container {
+            margin: 0;
+        }
     }
 
     @media (min-width: 1400px) {
