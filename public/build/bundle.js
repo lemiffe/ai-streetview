@@ -123,13 +123,6 @@ var app = (function () {
         node.addEventListener(event, handler, options);
         return () => node.removeEventListener(event, handler, options);
     }
-    function prevent_default(fn) {
-        return function (event) {
-            event.preventDefault();
-            // @ts-ignore
-            return fn.call(this, event);
-        };
-    }
     function attr(node, attribute, value) {
         if (value == null)
             node.removeAttribute(attribute);
@@ -16553,7 +16546,7 @@ var app = (function () {
     const { console: console_1 } = globals;
     const file = "src/App.svelte";
 
-    // (179:12) {#if showRoundSummary}
+    // (175:12) {#if showRoundSummary}
     function create_if_block_2(ctx) {
     	let roundsummary;
     	let current;
@@ -16604,14 +16597,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(179:12) {#if showRoundSummary}",
+    		source: "(175:12) {#if showRoundSummary}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (200:58) 
+    // (196:58) 
     function create_if_block_1(ctx) {
     	let button;
     	let mounted;
@@ -16623,7 +16616,7 @@ var app = (function () {
     			button.textContent = "Guess";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-success");
-    			add_location(button, file, 200, 16, 6247);
+    			add_location(button, file, 196, 16, 6168);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -16645,14 +16638,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(200:58) ",
+    		source: "(196:58) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (198:12) {#if !isGuessing && !gameEnded}
+    // (194:12) {#if !isGuessing && !gameEnded}
     function create_if_block(ctx) {
     	let button;
     	let mounted;
@@ -16664,7 +16657,7 @@ var app = (function () {
     			button.textContent = "Next Round";
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-info");
-    			add_location(button, file, 198, 16, 6081);
+    			add_location(button, file, 194, 16, 6002);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
@@ -16686,7 +16679,7 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(198:12) {#if !isGuessing && !gameEnded}",
+    		source: "(194:12) {#if !isGuessing && !gameEnded}",
     		ctx
     	});
 
@@ -16836,33 +16829,33 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "New Game";
     			attr_dev(strong, "class", "danger");
-    			add_location(strong, file, 171, 16, 5036);
-    			add_location(br, file, 171, 113, 5133);
-    			add_location(i, file, 172, 16, 5156);
+    			add_location(strong, file, 167, 16, 4957);
+    			add_location(br, file, 167, 113, 5054);
+    			add_location(i, file, 168, 16, 5077);
     			set_style(p, "text-align", "center");
     			set_style(p, "font-size", "1.2em");
-    			add_location(p, file, 170, 12, 4970);
+    			add_location(p, file, 166, 12, 4891);
     			attr_dev(div0, "class", "col");
-    			add_location(div0, file, 169, 8, 4940);
+    			add_location(div0, file, 165, 8, 4861);
     			attr_dev(div1, "class", "row pt-1 mb-3 align-items-end");
-    			add_location(div1, file, 168, 4, 4888);
+    			add_location(div1, file, 164, 4, 4809);
     			attr_dev(div2, "id", "carousel-container");
     			attr_dev(div2, "class", "col-lg-6 svelte-bo9e5x");
-    			add_location(div2, file, 177, 8, 5294);
+    			add_location(div2, file, 173, 8, 5215);
     			attr_dev(div3, "class", "col-lg-6");
-    			add_location(div3, file, 183, 8, 5575);
+    			add_location(div3, file, 179, 8, 5496);
     			attr_dev(div4, "class", "row mb-3 row-map svelte-bo9e5x");
-    			add_location(div4, file, 176, 4, 5255);
+    			add_location(div4, file, 172, 4, 5176);
     			attr_dev(button, "type", "button");
     			attr_dev(button, "class", "btn btn-lg btn-danger ms-2");
-    			add_location(button, file, 202, 12, 6366);
+    			add_location(button, file, 198, 12, 6287);
     			attr_dev(div5, "class", "col");
     			set_style(div5, "text-align", "right");
-    			add_location(div5, file, 196, 8, 5976);
+    			add_location(div5, file, 192, 8, 5897);
     			attr_dev(div6, "class", "row mb-3 align-items-end");
-    			add_location(div6, file, 195, 4, 5929);
+    			add_location(div6, file, 191, 4, 5850);
     			attr_dev(div7, "class", "container");
-    			add_location(div7, file, 167, 0, 4860);
+    			add_location(div7, file, 163, 0, 4781);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -16907,7 +16900,7 @@ var app = (function () {
     						false,
     						false
     					),
-    					listen_dev(window, "keydown", prevent_default(/*onKeyDown*/ ctx[19]), false, true, false),
+    					listen_dev(window, "keydown", /*onKeyDown*/ ctx[19], false, false, false),
     					listen_dev(button, "click", /*newGame*/ ctx[16], false, false, false)
     				];
 
@@ -17101,7 +17094,7 @@ var app = (function () {
     	let currGameMaps = [];
     	let currRound = 0;
     	let currImages = [];
-    	let mapOptions = mapset;
+    	let mapOptions = mapset.map(value => ({ value, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ value }) => value); // Shuffle initial mapset
     	let isGuessing = true;
     	let gameEnded = false;
     	let plonked = false;
@@ -17125,25 +17118,19 @@ var app = (function () {
     		$$invalidate(6, score = 0);
     	}
 
-    	const shuffleMapset = () => {
-    		// Shuffle initial mapset
-    		mapOptions = mapset.map(value => ({ value, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ value }) => value);
-
-    		return mapOptions;
-    	};
-
     	const chooseMapOption = () => {
     		// Select a random map, put it at the end of the list (to avoid selecting it again)
-    		let map = mapOptions.splice(Math.floor(Math.random() * mapOptions.length - 5), 1)[0];
+    		let rndIndex = Math.floor(Math.random() * (mapOptions.length - 5));
 
-    		mapOptions.push(map);
-    		return map;
+    		let rndItem = mapOptions.splice(rndIndex, 1)[0];
+    		mapOptions.push(rndItem);
+    		return rndItem;
     	};
 
     	function chooseMapsForGame() {
     		// Select 5 random rounds from available options
     		if (mapOptions.length <= 5) {
-    			return shuffleMapset();
+    			return mapOptions;
     		}
 
     		const maps = [];
@@ -17213,7 +17200,7 @@ var app = (function () {
     	}
 
     	function onKeyDown(e) {
-    		if (e.keyCode === 32 && isGuessing) {
+    		if (e.keyCode === 32 && isGuessing && plonked) {
     			makeGuess();
     		}
     	}
@@ -17284,7 +17271,6 @@ var app = (function () {
     		updateMarkerSet,
     		addScore,
     		resetScore,
-    		shuffleMapset,
     		chooseMapOption,
     		chooseMapsForGame,
     		calculateRoundScore,

@@ -20,7 +20,10 @@
     let currGameMaps = [];
     let currRound = 0;
     let currImages = [];
-    let mapOptions = mapset;
+    let mapOptions = mapset
+        .map((value) => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value); // Shuffle initial mapset
     let isGuessing = true;
     let gameEnded = false;
     let plonked = false;
@@ -44,31 +47,24 @@
         score = 0;
     }
 
-    const shuffleMapset = () => {
-        // Shuffle initial mapset
-        mapOptions = mapset
-            .map((value) => ({ value, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value);
-        return mapOptions;
-    };
-
     const chooseMapOption = () => {
         // Select a random map, put it at the end of the list (to avoid selecting it again)
-        let map = mapOptions.splice(Math.floor(Math.random() * mapOptions.length - 5), 1)[0];
-        mapOptions.push(map);
-        return map;
+        let rndIndex = Math.floor(Math.random() * (mapOptions.length - 5));
+        let rndItem = mapOptions.splice(rndIndex, 1)[0];
+        mapOptions.push(rndItem);
+        return rndItem;
     };
 
     function chooseMapsForGame() {
         // Select 5 random rounds from available options
         if (mapOptions.length <= 5) {
-            return shuffleMapset();
+            return mapOptions;
         }
         const maps = [];
         for (let i = 0; i < 5; i++) {
             maps.push(chooseMapOption());
         }
+
         return maps;
     }
 
@@ -153,7 +149,7 @@
     }
 
     function onKeyDown(e) {
-        if (e.keyCode === 32 && isGuessing) {
+        if (e.keyCode === 32 && isGuessing && plonked) {
             makeGuess();
         }
     }
@@ -161,7 +157,7 @@
     newGame();
 </script>
 
-<svelte:window on:resize={resizeMaplet} on:keydown|preventDefault={onKeyDown} />
+<svelte:window on:resize={resizeMaplet} on:keydown={onKeyDown} />
 
 <Navbar {score} />
 
