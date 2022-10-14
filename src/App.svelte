@@ -161,7 +161,7 @@
 
 <Navbar {score} />
 
-<div class="container">
+<div class="container-xl">
     <div class="row pt-1 mb-3 align-items-end">
         <div class="col">
             <p style="text-align: center; font-size: 1.2em;">
@@ -209,5 +209,11 @@
     #carousel-container {
         position: relative;
         overflow: hidden;
+    }
+
+    @media (min-width: 1400px) {
+        .container-xl {
+            max-width: 1600px;
+        }
     }
 </style>
