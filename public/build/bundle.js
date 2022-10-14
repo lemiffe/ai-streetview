@@ -15506,11 +15506,11 @@ var app = (function () {
     			attr_dev(link, "href", "https://unpkg.com/leaflet@1.6.0/dist/leaflet.css");
     			attr_dev(link, "integrity", "sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==");
     			attr_dev(link, "crossorigin", "");
-    			add_location(link, file$4, 131, 0, 3683);
+    			add_location(link, file$4, 131, 0, 3699);
     			attr_dev(div, "class", "map svelte-1xlrvwv");
     			set_style(div, "height", "100%");
     			set_style(div, "width", "100%");
-    			add_location(div, file$4, 138, 0, 3905);
+    			add_location(div, file$4, 138, 0, 3921);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -15557,10 +15557,11 @@ var app = (function () {
     	let map;
     	let myMarkerLayer;
     	let currMarker;
+    	const defaultLatLon = [60, 1];
     	let { isGuessing } = $$props;
 
     	function createMap(container) {
-    		let m = leafletSrc.map(container, { preferCanvas: true }).setView([60, 1], 2);
+    		let m = leafletSrc.map(container, { preferCanvas: true }).setView(defaultLatLon, 2);
 
     		leafletSrc.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
     			attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
@@ -15640,12 +15641,9 @@ var app = (function () {
 
     	const fly = markerLocations => {
     		if (!markerLocations || markerLocations.length === 0) {
-    			map.flyTo([20, 1], 2, { animate: true, duration: 0.4 });
+    			map.flyTo(defaultLatLon, 2, { animate: true, duration: 0.4 });
     		} else {
-    			map.flyToBounds(markerLocations, {
-    				animate: true, // map.fitWorld();
-    				duration: 1.5
-    			});
+    			map.flyToBounds(markerLocations, { animate: true, duration: 1.5 });
     		}
     	};
 
@@ -15693,6 +15691,7 @@ var app = (function () {
     		map,
     		myMarkerLayer,
     		currMarker,
+    		defaultLatLon,
     		isGuessing,
     		createMap,
     		mapAction,
