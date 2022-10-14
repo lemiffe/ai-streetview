@@ -26,10 +26,12 @@
             </div>
         {/each}
     </div>
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a class="carousel-control-prev" href="#" role="button" data-slide="prev" on:click={previous}>
         <span class="carousel-control-prev-icon" aria-hidden="true" />
         <span class="sr-only" />
     </a>
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a class="carousel-control-next" href="#" role="button" data-slide="next" on:click={next}>
         <span class="carousel-control-next-icon" aria-hidden="true" />
         <span class="sr-only" />

@@ -1,10 +1,9 @@
 <script>
     import Carousel from "./Carousel.svelte";
     import Maplet from "./Maplet.svelte";
-    import Score from "./Score.svelte";
     import mapset from "./mapset.js";
-    import * as markerIcons from "./icons.js";
-    import { fly } from "svelte/transition";
+    import Navbar from "./Navbar.svelte";
+    import RoundSummary from "./RoundSummary.svelte";
 
     // Functions to trigger sub-component events (bound)
 
@@ -164,24 +163,7 @@
 
 <svelte:window on:resize={resizeMaplet} on:keydown|preventDefault={onKeyDown} />
 
-<div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-            {@html markerIcons.plonk}
-            <span class="fs-4 ps-1">This Street View Does Not Exist</span>
-        </a>
-
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                Made by
-                <a href="https://hyperfollow.com/lemiffe" target="_blank">@lemiffe</a>
-                and
-                <a href="https://twitter.com/pjcr" target="_blank">@pjcr</a>
-                <Score {score} />
-            </li>
-        </ul>
-    </header>
-</div>
+<Navbar {score} />
 
 <div class="container">
     <div class="row pt-1 mb-3 align-items-end">
@@ -195,20 +177,7 @@
     <div class="row mb-3 row-map">
         <div id="carousel-container" class="col-lg-6">
             {#if showRoundSummary}
-                <div transition:fly={{ y: -100, duration: 1500 }} class="round-summary pt-4 pb-4">
-                    {#if gameEnded}
-                        <h3>Game Over!</h3>
-                        <p>You were {Math.round(kmDist * 100) / 100}km away ({roundScore} pts) on the last round!</p>
-                        <p>You got a total of {score} points!</p>
-                    {:else}
-                        <h3>You got {roundScore} points!</h3>
-                        <p>You were {Math.round(kmDist * 100) / 100}km away!</p>
-                        <p class="mt-1">
-                            <a href={roundUrl} target="_blank">Click here <sup>[🔗]</sup></a> to view the original street
-                            view.
-                        </p>
-                    {/if}
-                </div>
+                <RoundSummary {gameEnded} {roundScore} {score} {kmDist} {roundUrl} />
             {/if}
             <Carousel images={currImages} bind:reset={resetCarousel} />
         </div>
@@ -237,10 +206,6 @@
 </div>
 
 <style>
-    .nav-item a {
-        text-decoration: none;
-    }
-
     .row-map {
         min-height: 600px;
     }
@@ -248,28 +213,5 @@
     #carousel-container {
         position: relative;
         overflow: hidden;
-    }
-
-    .round-summary {
-        top: 0;
-        width: calc(100% - var(--bs-gutter-x));
-        text-align: center;
-        position: absolute;
-        z-index: 1000;
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: calc(var(--bs-gutter-x) * 0.5);
-        margin-right: calc(var(--bs-gutter-x) * 0.5);
-    }
-
-    .round-summary h2,
-    .round-summary h3 {
-        color: #ffffff;
-    }
-    .round-summary p,
-    .round-summary a,
-    .round-summary a:link,
-    .round-summary a:hover {
-        margin: 0;
-        color: #ffffff;
     }
 </style>
