@@ -136,7 +136,7 @@
     crossorigin=""
 />
 
-<div class="map" style="height:100%; width:100%" use:mapAction />
+<div class="map ratio ratio-1x1" style="height:100%; width:100%" use:mapAction />
 
 <style>
     :global(.leaflet-grab) {
