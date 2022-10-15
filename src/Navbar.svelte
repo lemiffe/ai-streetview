@@ -5,27 +5,32 @@
     export let score;
 </script>
 
-<div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-            {@html markerIcons.plonk}
-            <span class="fs-4 ps-1">This Street View Does Not Exist</span>
-        </a>
+<header class="p-3 text-bg-dark mb-4">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                {@html markerIcons.plonk}
+                <span class="fs-4 ps-1">This Street View Does Not Exist</span>
+            </a>
 
-        <ul class="nav nav-pills">
-            <li class="nav-item">
+            <div class="text-end">
                 Made by
-                <a href="https://hyperfollow.com/lemiffe" target="_blank">@lemiffe</a>
-                and
-                <a href="https://twitter.com/pjcr" target="_blank">@pjcr</a>
+                <a href="https://twitter.com/lemiffe" target="_blank">@lemiffe</a>,
+                <a href="https://twitter.com/pjcr" target="_blank">PJ3</a> &amp;
+                <a href="https://twitter.com/offeringofpie" target="_blank">Pie</a>
                 <Score {score} />
-            </li>
-        </ul>
-    </header>
-</div>
+            </div>
+        </div>
+    </div>
+</header>
 
 <style>
-    .nav-item a {
-        text-decoration: none;
+    .text-bg-dark {
+        color: #fff !important;
+        background-color: RGBA(33, 37, 41, var(--bs-bg-opacity, 1)) !important;
+    }
+
+    .text-end a {
+        color: #ffffff;
     }
 </style>
