@@ -151,6 +151,12 @@
     function onKeyDown(e) {
         if (e.keyCode === 32 && isGuessing && plonked) {
             makeGuess();
+            e.preventDefault();
+            e.stopPropagation();
+        } else if (e.keyCode === 32 && !isGuessing && !gameEnded) {
+            nextRound();
+            e.preventDefault();
+            e.stopPropagation();
         }
     }
 
@@ -211,19 +217,21 @@
         overflow: hidden;
     }
 
-    #carousel-container, #map-container {
+    #carousel-container,
+    #map-container {
         margin: 0 0 1rem;
     }
 
     @media (min-width: 980px) {
-        #carousel-container, #map-container {
+        #carousel-container,
+        #map-container {
             margin: 0;
         }
     }
 
     @media (min-width: 1400px) {
         .container-xl {
-            max-width: 1600px;
+            max-width: 1500px;
         }
     }
 </style>
