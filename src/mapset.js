@@ -104,6 +104,41 @@ const mapset = [
         gameUrl: "https://www.geoguessr.com/results/TlYtIWtWnPkl69om",
         images: ["15-a.jpg", "15-b.jpg", "15-c.jpg", "15-d.jpg"],
     },
+    {
+        latlon: [50.696508, -1.2406163],
+        streetUrl:
+            "https://www.google.com/maps/@50.696508,-1.2406163,3a,75y,90t/data=!3m6!1e1!3m4!1sAzE8DsM2R83YyF8XNbpMVA!2e0!7i16384!8i8192",
+        gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
+        images: ["16-a.jpg", "16-b.jpg", "16-c.jpg", "16-d.jpg"],
+    },
+    {
+        latlon: [55.759523, 37.7076869],
+        streetUrl:
+            "https://www.google.com/maps/@55.759523,37.7076869,3a,75y,90t/data=!3m6!1e1!3m4!1sKnfmqob1xJ2yJS4tFu7x3A!2e0!7i16384!8i8192",
+        gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
+        images: ["17-a.jpg", "17-b.jpg", "17-c.jpg", "17-d.jpg"],
+    },
+    {
+        latlon: [28.9951588, -13.7581819],
+        streetUrl:
+            "https://www.google.com/maps/@28.9951588,-13.7581819,3a,75y,90t/data=!3m6!1e1!3m4!1sBsnK7X6rZ7Gg-SD2SUsXLQ!2e0!7i13312!8i6656",
+        gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
+        images: ["18-a.jpg", "18-b.jpg", "18-c.jpg", "18-d.jpg"],
+    },
+    {
+        latlon: [24.354834, 120.5724379],
+        streetUrl:
+            "https://www.google.com/maps/@24.354834,120.5724379,3a,75y,90t/data=!3m6!1e1!3m4!1s7ANX3fwH_2MYRUWrb_U0-w!2e0!7i16384!8i8192",
+        gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
+        images: ["19-a.jpg", "19-b.jpg", "19-c.jpg", "19-d.jpg"],
+    },
+    {
+        latlon: [46.2156892, -64.5254599],
+        streetUrl:
+            "https://www.google.com/maps/@46.2156892,-64.5254599,3a,75y,90t/data=!3m6!1e1!3m4!1sa-uTOnLTxtHsTMQgNWIj5Q!2e0!7i16384!8i8192",
+        gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
+        images: ["20-a.jpg", "20-b.jpg", "20-c.jpg", "20-d.jpg"],
+    },
 ];
 
 export default mapset;
