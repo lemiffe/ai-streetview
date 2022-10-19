@@ -11,6 +11,12 @@ const mapset = [
             "https://www.google.com/maps/@56.056227,44.3989451,3a,75y,78.91h,93.66t/data=!3m6!1e1!3m4!1sQmRMjc96NgLWJucB5xNkwA!2e0!7i13312!8i6656",
         images: ["_funky-2.jpg"],
     },
+    {
+        latlon: [36.9656236, -93.3821924],
+        streetUrl:
+            "https://www.google.com/maps/@36.9656236,-93.3821924,3a,75y,105.85h,90.7t/data=!3m6!1e1!3m4!1s1pK8kq_hEGL_EUU8rLIX0Q!2e0!7i13312!8i6656",
+        images: ["_funky-3.jpg"],
+    },
 ];
 
 export default mapset;
