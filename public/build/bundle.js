@@ -16033,7 +16033,122 @@ var app = (function () {
             gameUrl: "https://www.geoguessr.com/game/WkTHDYlnnVgi5Zz2",
             images: ["20-a.jpg", "20-b.jpg", "20-c.jpg", "20-d.jpg"],
         },
+        {
+            latlon: [42.4474269, -76.4838543],
+            streetUrl:
+                "https://www.google.com/maps/@42.4474269,-76.4838543,3a,75y,90t/data=!3m6!1e1!3m4!1sYqcc96WFy-Pi-MjGdy0xPw!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/OhfuvqczD4t3zfaw",
+            images: ["21-a.jpg", "21-b.jpg", "21-c.jpg", "21-d.jpg"],
+        },
+        {
+            latlon: [45.4972801, 11.2669447],
+            streetUrl:
+                "https://www.google.com/maps/@45.4972801,11.2669447,3a,75y,90t/data=!3m6!1e1!3m4!1sBsPFUrHfapZmpqJTAnT_nA!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/OhfuvqczD4t3zfaw",
+            images: ["22-a.jpg", "22-b.jpg", "22-c.jpg", "22-d.jpg"],
+        },
+        {
+            latlon: [-8.3612636, -36.6923445],
+            streetUrl:
+                "https://www.google.com/maps/@-8.3612636,-36.6923445,3a,75y,90t/data=!3m6!1e1!3m4!1sZlYR-VwLO1V2E1vWMkH0Ng!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/OhfuvqczD4t3zfaw",
+            images: ["23-a.jpg", "23-b.jpg", "23-c.jpg", "23-d.jpg"],
+        },
+        {
+            latlon: [5.9351043, -1.3682643],
+            streetUrl:
+                "https://www.google.com/maps/@5.9351043,-1.3682643,3a,75y,90t/data=!3m6!1e1!3m4!1s8nybeXKDtImRO7kkKRYDWg!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/OhfuvqczD4t3zfaw",
+            images: ["24-a.jpg", "24-b.jpg", "24-c.jpg", "24-d.jpg"],
+        },
+        {
+            latlon: [34.5954521, 135.5842539],
+            streetUrl:
+                "https://www.google.com/maps/@34.5954521,135.5842539,3a,75y,90t/data=!3m6!1e1!3m4!1s59jWyBCw1kKkDupQrzyeaw!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/OhfuvqczD4t3zfaw",
+            images: ["25-a.jpg", "25-b.jpg", "25-c.jpg", "25-d.jpg"],
+        },
+        {
+            latlon: [19.9899898, -155.8259007],
+            streetUrl:
+                "https://www.google.com/maps/@19.9899898,-155.8259007,3a,75y,90t/data=!3m6!1e1!3m4!1sqFTn0S90Has-M9j5QfEBHA!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/IZEZB41a57ONqdFX",
+            images: ["26-a.jpg", "26-b.jpg", "26-c.jpg", "26-d.jpg"],
+        },
+        {
+            latlon: [52.2555936, 21.0269623],
+            streetUrl:
+                "https://www.google.com/maps/@52.2555936,21.0269623,3a,75y,259.98h,86.22t/data=!3m6!1e1!3m4!1slmss7mttVNFJQl16bz3p9g!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/IZEZB41a57ONqdFX",
+            images: ["27-a.jpg", "27-b.jpg", "27-c.jpg", "27-d.jpg"],
+        },
+        {
+            latlon: [36.0588912, -84.0334558],
+            streetUrl:
+                "https://www.google.com/maps/@36.0588912,-84.0334558,3a,75y,90t/data=!3m6!1e1!3m4!1smWtBlh1GR_bNm0YL0P2FeQ!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/IZEZB41a57ONqdFX",
+            images: ["28-a.jpg", "28-b.jpg", "28-c.jpg", "28-d.jpg"],
+        },
+        {
+            latlon: [35.3435561, 139.4883225],
+            streetUrl:
+                "https://www.google.com/maps/@35.3435561,139.4883225,3a,75y,239.82h,91.63t/data=!3m6!1e1!3m4!1swYsuYLKYA1aqgdASENTGbg!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/IZEZB41a57ONqdFX",
+            images: ["29-a.jpg", "29-b.jpg", "29-c.jpg", "29-d.jpg"],
+        },
+        {
+            latlon: [49.4832658, -1.4006902],
+            streetUrl:
+                "https://www.google.com/maps/@49.4832658,-1.4006902,3a,75y,113.68h,90.18t/data=!3m6!1e1!3m4!1slVlOJIc659ccKOx8wGCC9w!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/IZEZB41a57ONqdFX",
+            images: ["30-a.jpg", "30-b.jpg", "30-c.jpg", "30-d.jpg"],
+        },
+        {
+            latlon: [-25.4266044, -57.7883708],
+            streetUrl:
+                "https://www.google.com/maps/@-25.4266044,-57.7883708,3a,75y,297.86h,87.79t/data=!3m6!1e1!3m4!1sVlEzJRpnWNK3L9LOUlaT8A!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
+            images: ["31-a.jpg", "31-b.jpg", "31-c.jpg", "31-d.jpg"],
+        },
+        {
+            latlon: [31.556005, 34.6313311],
+            streetUrl:
+                "https://www.google.com/maps/@31.556005,34.6313311,3a,75y,18.05h,89.61t/data=!3m6!1e1!3m4!1spF9k1HOkTIBQ0L6J9AoAEg!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
+            images: ["32-a.jpg", "32-b.jpg", "32-c.jpg", "32-d.jpg"],
+        },
+        {
+            latlon: [48.2972628, 16.560502],
+            streetUrl:
+                "https://www.google.com/maps/@48.2972628,16.560502,3a,75y,164.29h,86.75t/data=!3m6!1e1!3m4!1sEXfEGlQH_1dD7Ib99-iMyw!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
+            images: ["33-a.jpg", "33-b.jpg", "33-c.jpg", "33-d.jpg"],
+        },
+        {
+            latlon: [-30.6287497, -66.2630688],
+            streetUrl:
+                "https://www.google.com/maps/@-30.6287497,-66.2630688,3a,75y,211.31h,86.34t/data=!3m6!1e1!3m4!1sTP1692siNJR42eDTObv7qg!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
+            images: ["34-a.jpg", "34-b.jpg", "34-c.jpg", "34-d.jpg"],
+        },
+        {
+            latlon: [51.8487755, -105.0368779],
+            streetUrl:
+                "https://www.google.com/maps/@51.8487755,-105.0368779,3a,75y,58.73h,99.55t/data=!3m6!1e1!3m4!1s_rTnZkZON46BIr4EH15NPQ!2e0!7i13312!8i6656",
+            gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
+            images: ["35-a.jpg", "35-b.jpg", "35-c.jpg", "35-d.jpg"],
+        },
     ];
+
+    /*
+        {
+            latlon: [],
+            streetUrl:
+                "",
+            gameUrl: "",
+            images: ["-a.jpg", "-b.jpg", "-c.jpg", "-d.jpg"],
+        },
+    */
 
     /* src/Score.svelte generated by Svelte v3.50.1 */
 
