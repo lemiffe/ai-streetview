@@ -805,21 +805,97 @@ var app = (function () {
     	return block;
     }
 
-    function create_fragment$5(ctx) {
-    	let div1;
-    	let div0;
-    	let t0;
+    // (29:4) {#if images.length > 1}
+    function create_if_block$2(ctx) {
     	let a0;
     	let span0;
-    	let t1;
+    	let t0;
     	let span1;
-    	let t2;
+    	let t1;
     	let a1;
     	let span2;
-    	let t3;
+    	let t2;
     	let span3;
     	let mounted;
     	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			a0 = element("a");
+    			span0 = element("span");
+    			t0 = space();
+    			span1 = element("span");
+    			t1 = space();
+    			a1 = element("a");
+    			span2 = element("span");
+    			t2 = space();
+    			span3 = element("span");
+    			attr_dev(span0, "class", "carousel-control-prev-icon");
+    			attr_dev(span0, "aria-hidden", "true");
+    			add_location(span0, file$5, 31, 12, 1020);
+    			attr_dev(span1, "class", "sr-only");
+    			add_location(span1, file$5, 32, 12, 1095);
+    			attr_dev(a0, "class", "carousel-control-prev");
+    			attr_dev(a0, "href", "#");
+    			attr_dev(a0, "role", "button");
+    			attr_dev(a0, "data-slide", "prev");
+    			add_location(a0, file$5, 30, 8, 913);
+    			attr_dev(span2, "class", "carousel-control-next-icon");
+    			attr_dev(span2, "aria-hidden", "true");
+    			add_location(span2, file$5, 36, 12, 1298);
+    			attr_dev(span3, "class", "sr-only");
+    			add_location(span3, file$5, 37, 12, 1373);
+    			attr_dev(a1, "class", "carousel-control-next");
+    			attr_dev(a1, "href", "#");
+    			attr_dev(a1, "role", "button");
+    			attr_dev(a1, "data-slide", "next");
+    			add_location(a1, file$5, 35, 8, 1195);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, a0, anchor);
+    			append_dev(a0, span0);
+    			append_dev(a0, t0);
+    			append_dev(a0, span1);
+    			insert_dev(target, t1, anchor);
+    			insert_dev(target, a1, anchor);
+    			append_dev(a1, span2);
+    			append_dev(a1, t2);
+    			append_dev(a1, span3);
+
+    			if (!mounted) {
+    				dispose = [
+    					listen_dev(a0, "click", /*previous*/ ctx[3], false, false, false),
+    					listen_dev(a1, "click", /*next*/ ctx[2], false, false, false)
+    				];
+
+    				mounted = true;
+    			}
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(a0);
+    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(a1);
+    			mounted = false;
+    			run_all(dispose);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block$2.name,
+    		type: "if",
+    		source: "(29:4) {#if images.length > 1}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment$5(ctx) {
+    	let div1;
+    	let div0;
+    	let t;
     	let each_value = /*images*/ ctx[0];
     	validate_each_argument(each_value);
     	let each_blocks = [];
@@ -827,6 +903,8 @@ var app = (function () {
     	for (let i = 0; i < each_value.length; i += 1) {
     		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
     	}
+
+    	let if_block = /*images*/ ctx[0].length > 1 && create_if_block$2(ctx);
 
     	const block = {
     		c: function create() {
@@ -837,38 +915,10 @@ var app = (function () {
     				each_blocks[i].c();
     			}
 
-    			t0 = space();
-    			a0 = element("a");
-    			span0 = element("span");
-    			t1 = space();
-    			span1 = element("span");
-    			t2 = space();
-    			a1 = element("a");
-    			span2 = element("span");
-    			t3 = space();
-    			span3 = element("span");
+    			t = space();
+    			if (if_block) if_block.c();
     			attr_dev(div0, "class", "carousel-inner");
     			add_location(div0, file$5, 21, 4, 521);
-    			attr_dev(span0, "class", "carousel-control-prev-icon");
-    			attr_dev(span0, "aria-hidden", "true");
-    			add_location(span0, file$5, 30, 8, 980);
-    			attr_dev(span1, "class", "sr-only");
-    			add_location(span1, file$5, 31, 8, 1051);
-    			attr_dev(a0, "class", "carousel-control-prev");
-    			attr_dev(a0, "href", "#");
-    			attr_dev(a0, "role", "button");
-    			attr_dev(a0, "data-slide", "prev");
-    			add_location(a0, file$5, 29, 4, 877);
-    			attr_dev(span2, "class", "carousel-control-next-icon");
-    			attr_dev(span2, "aria-hidden", "true");
-    			add_location(span2, file$5, 35, 8, 1238);
-    			attr_dev(span3, "class", "sr-only");
-    			add_location(span3, file$5, 36, 8, 1309);
-    			attr_dev(a1, "class", "carousel-control-next");
-    			attr_dev(a1, "href", "#");
-    			attr_dev(a1, "role", "button");
-    			attr_dev(a1, "data-slide", "next");
-    			add_location(a1, file$5, 34, 4, 1139);
     			attr_dev(div1, "id", "carousel");
     			attr_dev(div1, "class", "carousel slide");
     			attr_dev(div1, "data-ride", "carousel");
@@ -885,25 +935,8 @@ var app = (function () {
     				each_blocks[i].m(div0, null);
     			}
 
-    			append_dev(div1, t0);
-    			append_dev(div1, a0);
-    			append_dev(a0, span0);
-    			append_dev(a0, t1);
-    			append_dev(a0, span1);
-    			append_dev(div1, t2);
-    			append_dev(div1, a1);
-    			append_dev(a1, span2);
-    			append_dev(a1, t3);
-    			append_dev(a1, span3);
-
-    			if (!mounted) {
-    				dispose = [
-    					listen_dev(a0, "click", /*previous*/ ctx[3], false, false, false),
-    					listen_dev(a1, "click", /*next*/ ctx[2], false, false, false)
-    				];
-
-    				mounted = true;
-    			}
+    			append_dev(div1, t);
+    			if (if_block) if_block.m(div1, null);
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*currImageIndex, images*/ 3) {
@@ -929,14 +962,26 @@ var app = (function () {
 
     				each_blocks.length = each_value.length;
     			}
+
+    			if (/*images*/ ctx[0].length > 1) {
+    				if (if_block) {
+    					if_block.p(ctx, dirty);
+    				} else {
+    					if_block = create_if_block$2(ctx);
+    					if_block.c();
+    					if_block.m(div1, null);
+    				}
+    			} else if (if_block) {
+    				if_block.d(1);
+    				if_block = null;
+    			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
     			destroy_each(each_blocks, detaching);
-    			mounted = false;
-    			run_all(dispose);
+    			if (if_block) if_block.d();
     		}
     	};
 
