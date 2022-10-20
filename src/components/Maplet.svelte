@@ -2,7 +2,7 @@
     import { createEventDispatcher } from "svelte";
     const dispatch = createEventDispatcher();
     import L from "leaflet";
-    import * as markerIcons from "./icons.js";
+    import * as markerIcons from "../icons.js";
 
     let markerLayer;
     let lineLayer;

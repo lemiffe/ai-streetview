@@ -8,7 +8,7 @@
     export let roundUrl;
 </script>
 
-<div transition:fly={{ y: -100, duration: 1500 }} class="round-summary pt-4 pb-4">
+<div transition:fly|local={{ y: -100, duration: 1500 }} class="round-summary pt-4 pb-4">
     {#if gameEnded}
         <h3>Final score: {score} Points!</h3>
         <p>You were {Math.round(kmDist * 100) / 100}km away ({roundScore} pts)!</p>

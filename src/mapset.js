@@ -247,13 +247,3 @@ const mapset = [
 ];
 
 export default mapset;
-
-/*
-    {
-        latlon: [],
-        streetUrl:
-            "",
-        gameUrl: "",
-        images: ["-a.jpg", "-b.jpg", "-c.jpg", "-d.jpg"],
-    },
-*/

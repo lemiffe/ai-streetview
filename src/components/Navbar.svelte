@@ -1,5 +1,6 @@
 <script>
-    import * as markerIcons from "./icons.js";
+    import { active } from "tinro";
+    import * as markerIcons from "../icons.js";
     import Score from "./Score.svelte";
 
     export let score;
@@ -13,11 +14,13 @@
                 <span class="fs-4 ps-1">This Street View Does Not Exist</span>
             </a>
 
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/" class="nav-link px-2" use:active exact>Home</a></li>
+                <li><a href="/funky" class="nav-link px-2" use:active>Funky Mode</a></li>
+                <li><a href="/about" class="nav-link px-2" use:active>About</a></li>
+            </ul>
+
             <div class="text-end">
-                Made by
-                <a href="https://twitter.com/lemiffe" target="_blank">@lemiffe</a>,
-                <a href="https://twitter.com/pjcr" target="_blank">PJ3</a> &amp;
-                <a href="https://twitter.com/offeringofpie" target="_blank">Pie</a>
                 <Score {score} />
             </div>
         </div>
@@ -30,7 +33,12 @@
         background-color: RGBA(33, 37, 41, var(--bs-bg-opacity, 1)) !important;
     }
 
-    .text-end a {
+    .nav a {
+        text-decoration: none;
         color: #ffffff;
+    }
+
+    .nav a:global(.active) {
+        color: #ff0068;
     }
 </style>
