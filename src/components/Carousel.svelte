@@ -1,6 +1,4 @@
 <script>
-    import { fade } from "svelte/transition";
-
     export let images = [];
     let currImageIndex = 0;
 
@@ -23,7 +21,7 @@
 <div id="carousel" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
         {#each images as image, i}
-            <div id="carousel-images" class="carousel-item" transition:fade class:active={i === currImageIndex}>
+            <div id="carousel-images" class="carousel-item" class:active={i === currImageIndex}>
                 <img class="d-block w-100" src="game/{image}" alt="AI Generated Image {i + 1}" />
             </div>
         {/each}
