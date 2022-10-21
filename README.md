@@ -47,18 +47,6 @@ If you want to use `baseUrl` or `path` aliases within your `tsconfig`, you need 
 - Copy the lat/lon values as well as the street view URLs of each location after finishing the GeoGuessr game (click on the markers)
 - Paste them in the same order as the images in the src/mapset.js file (make sure to use the correct filenames and lat/lons)
 
-**Blank mapset item:**
-
-```javascript
-{
-    latlon: [],
-    streetUrl:
-        "",
-    gameUrl: "",
-    images: ["-a.jpg", "-b.jpg", "-c.jpg", "-d.jpg"],
-},
-```
-
 ### Optimising images
 
 - `cd scripts`

@@ -17749,6 +17749,41 @@ var app = (function () {
             gameUrl: "https://www.geoguessr.com/game/Xfa6GegeFd2y4bMC",
             images: ["35-a.jpg", "35-b.jpg", "35-c.jpg", "35-d.jpg"],
         },
+        {
+            latlon: [5.041675, 100.9910448],
+            streetUrl:
+                "https://www.google.com/maps/@5.041675,100.9910448,3a,75y,200.87h,92.88t/data=!3m6!1e1!3m4!1sFO_NI204JU53MOhfMxP3zg!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/H4iEwlCJFIvVhWSj",
+            images: ["36-a.jpg", "36-b.jpg", "36-c.jpg", "36-d.jpg"],
+        },
+        {
+            latlon: [-26.1241336, 28.0872841],
+            streetUrl:
+                "https://www.google.com/maps/@-26.1241336,28.0872841,3a,75y,142.5h,92.15t/data=!3m6!1e1!3m4!1s9CYeRyuqNngiLu4Gt2DVYQ!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/H4iEwlCJFIvVhWSj",
+            images: ["37-a.jpg", "37-b.jpg", "37-c.jpg", "37-d.jpg"],
+        },
+        {
+            latlon: [-28.9072753, 22.4977155],
+            streetUrl:
+                "https://www.google.com/maps/@-28.9072753,22.4977155,3a,75y,19.74h,94.74t/data=!3m6!1e1!3m4!1sgCRqitaSrx462Edrir0Bsw!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/H4iEwlCJFIvVhWSj",
+            images: ["38-a.jpg", "38-b.jpg", "38-c.jpg", "38-d.jpg"],
+        },
+        {
+            latlon: [37.4452541, -120.8309564],
+            streetUrl:
+                "https://www.google.com/maps/@37.4452541,-120.8309564,3a,75y,1.9h,99.13t/data=!3m6!1e1!3m4!1scf7yhqihcMCDRzug6RcrbA!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/H4iEwlCJFIvVhWSj",
+            images: ["39-a.jpg", "39-b.jpg", "39-c.jpg", "39-d.jpg"],
+        },
+        {
+            latlon: [34.5204915, -101.7054877],
+            streetUrl:
+                "https://www.google.com/maps/@34.5204915,-101.7054877,3a,75y,117.01h,99.44t/data=!3m6!1e1!3m4!1s79FiSSpP_n-1sjF-0e51zg!2e0!7i16384!8i8192",
+            gameUrl: "https://www.geoguessr.com/game/H4iEwlCJFIvVhWSj",
+            images: ["40-a.jpg", "40-b.jpg", "40-c.jpg", "40-d.jpg"],
+        },
     ];
 
     const mapset = [
