@@ -59,6 +59,36 @@ const mapset = [
             "https://www.google.com/maps/@-52.597774,-71.1984926,3a,75y,133.59h,93.19t/data=!3m6!1e1!3m4!1sSDwOPz6lXZk8cr_3ssK4CA!2e0!7i13312!8i6656",
         images: ["funky-10.jpg"],
     },
+    {
+        latlon: [-8.4254427, 117.0982517],
+        streetUrl:
+            "https://www.google.com/maps/@-8.4254427,117.0982517,3a,75y,102.49h,80.97t/data=!3m6!1e1!3m4!1sC6hmZwYoTys0mwJ2M0OGwQ!2e0!7i16384!8i8192",
+        images: ["funky-11.jpg"],
+    },
+    {
+        latlon: [-27.4018864, 153.0996601],
+        streetUrl:
+            "https://www.google.com/maps/@-27.4018864,153.0996601,3a,75y,263.38h,85.55t/data=!3m6!1e1!3m4!1sh00iuxes3yso2U8CAg4nUw!2e0!7i16384!8i8192",
+        images: ["funky-12.jpg"],
+    },
+    {
+        latlon: [44.259935, 24.888709],
+        streetUrl:
+            "https://www.google.com/maps/@44.259935,24.888709,3a,75y,127.6h,95.23t/data=!3m6!1e1!3m4!1sLVEVuZM9As1becwpUMaZeQ!2e0!7i16384!8i8192",
+        images: ["funky-13.jpg"],
+    },
+    {
+        latlon: [1.2175305, 99.505299],
+        streetUrl:
+            "https://www.google.com/maps/@1.2175305,99.505299,3a,75y,185.34h,93.94t/data=!3m6!1e1!3m4!1szJp-01NKeaMEQlSViR7GUQ!2e0!7i16384!8i8192",
+        images: ["funky-14.jpg"],
+    },
+    {
+        latlon: [55.0387658, -1.857667],
+        streetUrl:
+            "https://www.google.com/maps/@55.0387658,-1.857667,3a,75y,224.59h,91.96t/data=!3m6!1e1!3m4!1sZ9_PKAkR-Vt-3FEDxnBX6Q!2e0!7i16384!8i8192",
+        images: ["funky-15.jpg"],
+    },
 ];
 
 export default mapset;
