@@ -89,6 +89,48 @@ const mapset = [
             "https://www.google.com/maps/@55.0387658,-1.857667,3a,75y,224.59h,91.96t/data=!3m6!1e1!3m4!1sZ9_PKAkR-Vt-3FEDxnBX6Q!2e0!7i16384!8i8192",
         images: ["funky-15.jpg"],
     },
+    {
+        latlon: [27.0853811, 142.2087417],
+        streetUrl:
+            "https://www.google.com/maps/@27.0853811,142.2087417,3a,75y,1.94h,90.34t/data=!3m6!1e1!3m4!1s5gcIve5_Ih3XYKjX4iMQ3w!2e0!7i13312!8i6656",
+        images: ["funky-16.jpg"],
+    },
+    {
+        latlon: [48.8858394, 2.3450922],
+        streetUrl:
+            "https://www.google.com/maps/@48.8858394,2.3450922,3a,75y,215.87h,80.85t/data=!3m6!1e1!3m4!1scMtRt4A1By_WKx6-FJktsg!2e0!7i16384!8i8192",
+        images: ["funky-17.jpg"],
+    },
+    {
+        latlon: [-39.8868387, 175.6108248],
+        streetUrl:
+            "https://www.google.com/maps/@-39.8868387,175.6108248,3a,75y,224.45h,93.98t/data=!3m6!1e1!3m4!1sCw1-EVMnehBIIZZ5RwDa5g!2e0!7i13312!8i6656",
+        images: ["funky-18.jpg"],
+    },
+    {
+        latlon: [55.754087, 37.6198023],
+        streetUrl:
+            "https://www.google.com/maps/@55.754087,37.6198023,3a,75y,324.38h,92.9t/data=!3m6!1e1!3m4!1ssx7thUKCJzUGUG8dbzp8tA!2e0!7i13312!8i6656",
+        images: ["funky-19.jpg"],
+    },
+    {
+        latlon: [27.1744619, 78.0420743],
+        streetUrl:
+            "https://www.google.com/maps/@27.1744619,78.0420743,3a,75y,154.37h,76.24t/data=!3m6!1e1!3m4!1sAF1QipOvgBS4bvnY86mpHyJ_dNFGCJM8aqpDx0-QnsN5!2e10!7i2508!8i1254",
+        images: ["funky-20.jpg"],
+    },
+    {
+        latlon: [43.878403, -103.4575155],
+        streetUrl:
+            "https://www.google.com/maps/@43.878403,-103.4575155,3a,75y,258.88h,96.75t/data=!3m6!1e1!3m4!1sgOgd5MSDlBcvJexCleNiPg!2e0!7i13312!8i6656",
+        images: ["funky-21.jpg"],
+    },
+    {
+        latlon: [37.971215, 23.7268908],
+        streetUrl:
+            "https://www.google.com/maps/@37.971215,23.7268908,3a,75y,32.61h,81.3t/data=!3m6!1e1!3m4!1sAF1QipPsyLig-vIQDup75WwLgiENWznUS3Pe3KuEGNOq!2e10!7i4764!8i1498",
+        images: ["funky-22.jpg"],
+    },
 ];
 
 export default mapset;
